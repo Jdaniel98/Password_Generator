@@ -19,8 +19,7 @@ A Python-based secure password generator that creates strong, customizable passw
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/secure-password-generator.git
-   cd secure-password-generator
+  https://github.com/Jdaniel98/Password_Generator.git
    ```
 
 2. (Optional) Create and activate a virtual environment:
