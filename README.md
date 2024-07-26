@@ -38,7 +38,7 @@ This Advanced Password Generator and Manager is a powerful Python-based tool des
 1. Ensure you have Python 3.7+ installed on your system.
 2. Clone this repository:
    ```
-  git clone https://github.com/Jdaniel98/Password_Generator.git
+   git clone https://github.com/Jdaniel98/Password_Generator.git
    ```
 3. Navigate to the project directory:
    ```
