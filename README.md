@@ -1,96 +1,207 @@
-# Secure Password Generator
+# Advanced Password Generator and Manager
 
-A Python-based secure password generator that creates strong, customizable passwords suitable for production use.
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Features](#features)
+3. [Installation](#installation)
+4. [Usage](#usage)
+   - [Basic Password Generation](#basic-password-generation)
+   - [Memorable Passwords](#memorable-passwords)
+   - [Passphrase-based Passwords](#passphrase-based-passwords)
+   - [Password Saving and Retrieval](#password-saving-and-retrieval)
+   - [Password Complexity Enforcement](#password-complexity-enforcement)
+   - [Export and Import](#export-and-import)
+5. [Code Structure](#code-structure)
+6. [Security Considerations](#security-considerations)
+7. [Contributing](#contributing)
+8. [License](#license)
+
+## Introduction
+
+This Advanced Password Generator and Manager is a powerful Python-based tool designed to create strong, secure passwords and manage them effectively. It offers a wide range of features including customizable password generation, memorable password creation, password strength assessment, secure storage, and more.
 
 ## Features
 
-- Generates cryptographically secure passwords
-- Customizable password length
-- Flexible character type selection (lowercase, uppercase, digits, special characters)
-- Ensures at least one character from each selected type
-- Complies with common password security standards
-- Efficient and optimized for performance
-
-## Requirements
-
-- Python 3.6+
+- Customizable password generation with options for length, character types, and exclusions
+- Memorable password generation using word lists
+- Passphrase-based password generation
+- Password strength checker with visual representation
+- Secure password encryption and storage
+- Password expiration tracking
+- Password complexity policy enforcement
+- Password generation logging
+- Export and import functionality for saved passwords
+- Command-line interface for easy interaction
 
 ## Installation
 
-1. Clone this repository:
+1. Ensure you have Python 3.7+ installed on your system.
+2. Clone this repository:
    ```
-   https://github.com/Jdaniel98/Password_Generator.git
+   git clone https://github.com/yourusername/advanced-password-generator.git
    ```
-
-2. (Optional) Create and activate a virtual environment:
+3. Navigate to the project directory:
    ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   cd advanced-password-generator
    ```
-
-3. Install dependencies (if any in the future):
+4. Install the required dependencies:
    ```
-   pip install -r requirements.txt
+   pip install cryptography
    ```
 
 ## Usage
 
-### As a standalone script
+### Basic Password Generation
 
-Run the script directly:
+To generate a basic password:
 
+```bash
+python main.py --length 16 --count 2
 ```
-python password_generator.py
+
+This will generate two 16-character passwords.
+
+Example output:
+```
+Password 1: 3X$mK9pL&fQ2wR7n
+Strength: Very Strong 🟥🟥🟨🟨🟩🟩
+
+Password 2: Jh5%zU8cN@bT4yE1
+Strength: Very Strong 🟥🟥🟨🟨🟩🟩
 ```
 
-This will generate a password using default settings (16 characters, all character types).
+### Memorable Passwords
 
-### As a module in your project
+To generate a memorable password:
+
+```bash
+python main.py --memorable --words 5 --separator "."
+```
+
+This will create a password using 5 words separated by dots.
+
+Example output:
+```
+Password 1: apple.banana.cherry.date.elder
+Strength: Strong 🟥🟥🟨🟨🟩
+```
+
+### Passphrase-based Passwords
+
+To generate a password based on a passphrase:
+
+```bash
+python main.py --passphrase "my secret phrase" --length 20
+```
+
+This will create a 20-character password based on the provided passphrase.
+
+### Password Saving and Retrieval
+
+To save a generated password:
+
+```bash
+python main.py --length 16 --save --service "example.com" --username "user@example.com"
+```
+
+This will generate a password and save it for the specified service and username.
+
+To retrieve a saved password, you would typically do this programmatically. Here's an example of how you might use the `PasswordManager` class to retrieve a password:
 
 ```python
-from password_generator import PasswordGenerator
+password_manager = PasswordManager("master_password")
+password_data = password_manager.get_password("example.com")
+print(f"Username: {password_data['username']}")
+print(f"Password: {password_data['password']}")
+print(f"Expired: {'Yes' if password_data['is_expired'] else 'No'}")
+print(f"Days until expiration: {password_data['days_until_expiration']}")
+```
 
+### Password Complexity Enforcement
+
+The `enforce_complexity_policy` method can be used to ensure passwords meet specific criteria:
+
+```python
 generator = PasswordGenerator()
-
-# Generate a password with default settings
-password = generator.generate_password()
-
-# Generate a custom password
-custom_password = generator.generate_password(
-    length=20,
-    char_types={'lowercase', 'uppercase', 'digits'}
+password = generator.generate_password(length=12)
+is_complex = generator.enforce_complexity_policy(
+    password,
+    min_length=12,
+    require_upper=True,
+    require_lower=True,
+    require_digit=True,
+    require_special=True
 )
-
-print(f"Default password: {password}")
-print(f"Custom password: {custom_password}")
+print(f"Password meets complexity requirements: {is_complex}")
 ```
 
-## Customization
+### Export and Import
 
-You can customize the password generation by modifying the `generate_password` method parameters:
+To export saved passwords:
 
-- `length`: Integer, minimum 8 (default: 12)
-- `char_types`: Set of strings, can include 'lowercase', 'uppercase', 'digits', 'special' (default: all four types)
-
-Example:
-```python
-password = generator.generate_password(length=15, char_types={'lowercase', 'digits', 'special'})
+```bash
+python main.py --export "passwords.json"
 ```
+
+To import saved passwords:
+
+```bash
+python main.py --import "passwords.json"
+```
+
+## Code Structure
+
+The project consists of two main classes:
+
+1. `PasswordGenerator`: Handles password generation and strength assessment.
+
+   Key methods:
+   ```python
+   def generate_password(self, length: int = 12, char_types: Set[str] = {'lowercase', 'uppercase', 'digits', 'special'}, exclude_similar: bool = False, custom_chars: str = '') -> str:
+       # ... password generation logic ...
+
+   def check_password_strength(self, password: str) -> str:
+       # ... strength checking logic ...
+
+   def generate_memorable_password(self, num_words: int = 4, separator: str = '-') -> str:
+       # ... memorable password generation logic ...
+   ```
+
+2. `PasswordManager`: Manages password storage, retrieval, and related operations.
+
+   Key methods:
+   ```python
+   def add_password(self, service: str, username: str, password: str, expiration_days: int = 90):
+       # ... password saving logic ...
+
+   def get_password(self, service: str) -> Dict:
+       # ... password retrieval logic ...
+
+   def export_passwords(self, filename: str):
+       # ... export logic ...
+
+   def import_passwords(self, filename: str):
+       # ... import logic ...
+   ```
 
 ## Security Considerations
 
-- This generator uses Python's `secrets` module for cryptographically strong random number generation.
-- The minimum password length is set to 8 characters, but longer passwords are recommended for better security.
-- While this generator creates strong passwords, always follow your organization's security policies and best practices.
+- This tool uses strong encryption (Fernet) to secure stored passwords.
+- The master password used for encryption is never stored and should be kept secret.
+- For production use, consider using a unique salt for each user and storing it securely.
+- Regularly update and rotate passwords, especially for sensitive accounts.
+- Always use HTTPS when transmitting passwords over a network.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions to this project are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch for your feature
+3. Commit your changes
+4. Push to your branch
+5. Create a new Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-
-This password generator is provided as-is, without any guarantees. Always ensure that generated passwords meet your specific security requirements before use in production environments.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
